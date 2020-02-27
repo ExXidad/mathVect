@@ -1,145 +1,173 @@
 #include <iostream>
 #include <vector>
 
+typedef std::vector<std::vector<double>> mapDouble;
+
 class Vector {
 private:
-    double data[5];
-
+    std::vector<double> data;
 public:
-    Vector(const double *newData) {
-        setData(newData);
-    }
-
-    void setData(const double *newData) {
-        for (int i = 0; i < 5; ++i) {
-            data[i] = newData[i];
-        }
-    }
-
-    const double *getData() {
+    const std::vector<double> &getData() const {
         return data;
     }
 
-    Vector add(Vector anotherVector) {
-        double tmp[5]{0, 0, 0, 0, 0};
-        for (int i = 0; i < 5; ++i) {
-            tmp[i] = data[i] + anotherVector.data[i];
+    void setData(const std::vector<double> &data) {
+        Vector::data = data;
+    }
+
+    Vector(std::vector<double> newDat) {
+        data = newDat;
+    };
+
+    Vector add(const Vector &anotherVect) {
+        if (data.size() != anotherVect.data.size()) {
+            throw std::invalid_argument("Wrond dimensions");
+        };
+
+        std::vector<double> tmp(data.size(), 0);
+        for (int i = 0; i < data.size(); ++i) {
+            tmp[i] = data[i] + anotherVect.data[i];
         }
+
         return Vector(tmp);
     }
 
-    Vector subtract(Vector anotherVector) {
-        double tmp[5]{0, 0, 0, 0, 0};
-        for (int i = 0; i < 5; ++i) {
-            tmp[i] = data[i] - anotherVector.data[i];
+    Vector subtract(const Vector &anotherVect) {
+        if (data.size() != anotherVect.data.size()) {
+            throw std::invalid_argument("Wrond dimensions");
+        };
+
+        std::vector<double> tmp(data.size(), 0);
+        for (int i = 0; i < data.size(); ++i) {
+            tmp[i] = data[i] - anotherVect.data[i];
         }
+
         return Vector(tmp);
     }
 
-    double scalarProduct(Vector anotherVector) {
+    double scalarProduct(const Vector &anotherVect) {
+        if (data.size() != anotherVect.data.size()) {
+            throw std::invalid_argument("Wrond dimensions");
+        };
+
         double tmp = 0;
-        for (int i = 0; i < 5; ++i) {
-            tmp += data[i] * anotherVector.data[i];
+        for (int i = 0; i < data.size(); ++i) {
+            tmp += data[i] * anotherVect.data[i];
         }
+
         return tmp;
     }
 
-    void outVector() {
-        for (double i : data) {
-            std::cout << i << " ";
+    void outVect() {
+        for (const auto &item : data) {
+            std::cout << item << " ";
         }
         std::cout << std::endl;
-    }
+    };
 };
 
 class Matrix {
 private:
-    double data[3][3];
-
+    mapDouble data;
 public:
-    Matrix(const double newData[3][3]) {
-        setData(newData);
+    Matrix(const mapDouble &newDat) {
+        data = newDat;
+    };
+
+    void setData(const mapDouble &data) {
+        Matrix::data = data;
     }
 
-    void setData(const double newData[3][3]) {
-        for (int j = 0; j < 3; ++j)
-            for (int i = 0; i < 3; ++i) {
-                data[i][j] = newData[i][j];
-            }
-    }
+    Matrix add(const Matrix &anotherMatrix) {
+        if (data[0].size() != anotherMatrix.data[0].size() || data.size() != anotherMatrix.data.size()) {
+            throw std::invalid_argument("Wrond dimensions");
+        };
 
-    Matrix add(Matrix anotherMatrix) {
-        double tmp[3][3];
-        for (int j = 0; j < 3; ++j)
-            for (int i = 0; i < 3; ++i) {
-                tmp[i][j] = data[i][j] + anotherMatrix.data[i][j];
+        mapDouble tmp(data.size(), std::vector<double>(data[0].size(), 0));
+        for (int j = 0; j < data.size(); ++j)
+            for (int i = 0; i < data[0].size(); ++i) {
+                tmp[j][i] = data.at(j).at(i) + anotherMatrix.data.at(j).at(i);
             }
+
         return Matrix(tmp);
     }
 
-    Matrix subtract(Matrix anotherMatrix) {
-        double tmp[3][3];
-        for (int j = 0; j < 3; ++j)
-            for (int i = 0; i < 3; ++i) {
-                tmp[i][j] = data[i][j] - anotherMatrix.data[i][j];
+    Matrix subtract(const Matrix &anotherMatrix) {
+        if (data[0].size() != anotherMatrix.data[0].size() || data.size() != anotherMatrix.data.size()) {
+            throw std::invalid_argument("Wrond dimensions");
+        };
+
+        mapDouble tmp(data.size(), std::vector<double>(data[0].size(), 0));
+        for (int j = 0; j < data.size(); ++j)
+            for (int i = 0; i < data[0].size(); ++i) {
+                tmp[j][i] = data.at(j).at(i) - anotherMatrix.data.at(j).at(i);
             }
+
         return Matrix(tmp);
     }
 
-    double scalarProduct(Matrix anotherMatrix) {
+    double scalarProduct(const Matrix &anotherMatrix) {
+        if (data[0].size() != anotherMatrix.data[0].size() || data.size() != anotherMatrix.data.size()) {
+            throw std::invalid_argument("Wrond dimensions");
+        };
+
         double tmp = 0;
-        for (int j = 0; j < 3; ++j)
-            for (int i = 0; i < 3; ++i) {
-                tmp += data[i][j] * anotherMatrix.data[i][j];
+        for (int j = 0; j < data.size(); ++j)
+            for (int i = 0; i < data[0].size(); ++i) {
+                tmp += data.at(j).at(i) * anotherMatrix.data.at(j).at(i);
             }
+
         return tmp;
     }
 
     void outMatrix() {
-        for (int j = 0; j < 3; ++j) {
+        for (int j = 0; j < data.size(); ++j) {
             std::cout << "| ";
-            for (int i = 0; i < 3; ++i) {
+            for (int i = 0; i < data[0].size(); ++i) {
                 std::cout << data[j][i] << " ";
             }
             std::cout << "|";
             std::cout << std::endl;
         }
-    }
+    };
 };
 
-
 int main() {
-    auto *tmp1 = new double[5]{1, 2, 3, 4, 5}, *tmp2 = new double[5]{1, 2, 3, 4, 5};
-    Vector x(tmp1), y(tmp2);
-    std::cout << "x" << std::endl;
-    x.outVector();
-    std::cout << "y" << std::endl;
-    y.outVector();
-    std::cout << "sum" << std::endl;
-    x.add(y).outVector();
-    std::cout << "subtract" << std::endl;
-    x.subtract(y).outVector();
-    std::cout << "scalar product" << std::endl;
-    std::cout << x.scalarProduct(y) << std::endl;
+//    Vector a({1, 2, 3, 4, 5}), b({3, 5, 2, 1, 8});
+//
+//    a.outVect();
+//    b.outVect();
+//    a.add(b).outVect();
+//    a.subtract(b).outVect();
+//    std::cout << a.scalarProduct(b) << std::endl;
 
-    double tmp3[3][3]{{1, 2, 3},
-                      {4, 5, 6},
-                      {7, 8, 9}};
-    double tmp4[3][3]{{1, 2, 3},
-                      {4, 5, 6},
-                      {7, 8, 9}};
+    Matrix myMatrix1(mapDouble{
+            {1, 2, 3, 4},
+            {4, 5, 6, 3},
+            {5, 2, 1, 2}});
 
-    Matrix z(tmp3), h(tmp4);
-    std::cout << "z" << std::endl;
-    z.outMatrix();
-    std::cout << "h" << std::endl;
-    h.outMatrix();
-    std::cout << "sum" << std::endl;
-    z.add(h).outMatrix();
-    std::cout << "subtract" << std::endl;
-    z.subtract(h).outMatrix();
-    std::cout << "scalar product" << std::endl;
-    std::cout << z.scalarProduct(h) << std::endl;
+    Matrix myMatrix2(mapDouble{
+            {4, 22, 13, 74},
+            {4, 2,  6,  3},
+            {7, 5,  3,  21}});
+
+    std::cout << "matrix 1" << std::endl;
+    myMatrix1.outMatrix();
+
+    std::cout << "matrix 2" << std::endl;
+    myMatrix2.outMatrix();
+
+    std::cout << "matrix 1 + matrix 2" << std::endl;
+    myMatrix1.add(myMatrix2).outMatrix();
+
+    std::cout << "matrix 1 - matrix 2" << std::endl;
+    myMatrix1.subtract(myMatrix2).outMatrix();
+
+    std::cout << "matrix 1 . matrix 2" << std::endl;
+    std::cout << myMatrix1.scalarProduct(myMatrix2) << std::endl;
+
+
+
 
     return 0;
 }
